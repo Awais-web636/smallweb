@@ -11,7 +11,7 @@ export const searchService = {
     if (!term) throw new AppError(400, "Enter a search term.", "EMPTY_QUERY");
     const regex = new RegExp(escapeRegex(term), "i");
     const sites = await SiteModel.find({
-      $or: [{ $text: { $search: term } }, { searchableText: regex }, { title: regex }]
+      $or: [{ searchableText: regex }, { title: regex }]
     })
       .select("address title searchableText")
       .limit(50)
