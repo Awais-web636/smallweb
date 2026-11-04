@@ -22,9 +22,14 @@ export function sanitizePublishedHtml(input: string): string {
         const normalized = href.trim().toLowerCase();
         const internalAddress = normalized.replace(/^https?:\/\//, "").split(/[/?#]/)[0];
         const safeInternal = /^[a-z0-9][a-z0-9-]*\.zz$/.test(internalAddress);
+        const attribs: Record<string, string> = {};
+        if (safeInternal) {
+          attribs.href = href;
+          if (attributes.title) attribs.title = attributes.title;
+        }
         return {
           tagName: "a",
-          attribs: safeInternal ? { href, title: attributes.title || "" } : {}
+          attribs
         };
       }
     }
@@ -32,7 +37,8 @@ export function sanitizePublishedHtml(input: string): string {
 }
 
 export function extractSearchableText(html: string): string {
-  return sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} })
+  const withBoundaries = html.replace(/<br\s*\/?>|<\/(?:address|article|blockquote|dd|div|dl|dt|figcaption|figure|h[1-6]|li|main|ol|p|pre|section|table|td|th|tr|ul)>/gi, " ");
+  return sanitizeHtml(withBoundaries, { allowedTags: [], allowedAttributes: {} })
     .replace(/&nbsp;/gi, " ")
     .replace(/\s+/g, " ")
     .trim();

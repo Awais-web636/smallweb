@@ -1,4 +1,4 @@
-import { Schema, model, models, type InferSchemaType } from "mongoose";
+import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
 
 const siteSchema = new Schema({
   address: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -11,7 +11,6 @@ const siteSchema = new Schema({
 }, { versionKey: false });
 
 siteSchema.index({ searchableText: "text", title: "text" });
-siteSchema.index({ address: 1 }, { unique: true });
-
 export type Site = InferSchemaType<typeof siteSchema>;
-export const SiteModel = models.Site || model("Site", siteSchema);
+export const SiteModel: Model<Site> =
+  (models.Site as Model<Site> | undefined) || model<Site>("Site", siteSchema);

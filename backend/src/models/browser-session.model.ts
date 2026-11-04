@@ -1,4 +1,4 @@
-import { Schema, model, models, type InferSchemaType } from "mongoose";
+import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
 
 const entrySchema = new Schema({
   address: { type: String, required: true, lowercase: true, trim: true },
@@ -14,7 +14,7 @@ const browserSessionSchema = new Schema({
   updatedAt: { type: Date, required: true, default: Date.now }
 }, { versionKey: false });
 
-browserSessionSchema.index({ personId: 1 }, { unique: true });
-
 export type BrowserSession = InferSchemaType<typeof browserSessionSchema>;
-export const BrowserSessionModel = models.BrowserSession || model("BrowserSession", browserSessionSchema);
+export const BrowserSessionModel: Model<BrowserSession> =
+  (models.BrowserSession as Model<BrowserSession> | undefined)
+  || model<BrowserSession>("BrowserSession", browserSessionSchema);

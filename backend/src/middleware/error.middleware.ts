@@ -4,6 +4,10 @@ import { AppError } from "../errors/app-error";
 import { env } from "../config/environment";
 
 export const errorMiddleware: ErrorRequestHandler = (error, _request, response, _next) => {
+  if (error?.type === "entity.too.large") {
+    response.status(413).json({ error: { code: "PAYLOAD_TOO_LARGE", message: "Request body exceeds the allowed size." } });
+    return;
+  }
   if (error instanceof AppError) {
     response.status(error.statusCode).json({ error: { code: error.code, message: error.message } });
     return;

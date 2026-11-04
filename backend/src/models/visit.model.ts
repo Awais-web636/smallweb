@@ -1,4 +1,4 @@
-import { Schema, model, models, type InferSchemaType } from "mongoose";
+import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
 
 const visitSchema = new Schema({
   personId: { type: Schema.Types.ObjectId, ref: "Person", required: true },
@@ -17,4 +17,5 @@ visitSchema.index({ personId: 1, visitedAt: -1 });
 visitSchema.index({ personId: 1, sequence: 1 }, { unique: true });
 
 export type Visit = InferSchemaType<typeof visitSchema>;
-export const VisitModel = models.Visit || model("Visit", visitSchema);
+export const VisitModel: Model<Visit> =
+  (models.Visit as Model<Visit> | undefined) || model<Visit>("Visit", visitSchema);
