@@ -27,6 +27,9 @@ The backend follows routes → validation middleware → controllers → service
 
 ```text
 backend/
+  package.json      backend dependencies and scripts
+  package-lock.json backend dependency lockfile
+  .gitignore        backend environment/build exclusions
   src/config/       environment and MongoDB connection
   src/controllers/  thin HTTP request handlers
   src/middleware/   validation, errors, 404
@@ -37,6 +40,9 @@ backend/
   src/services/     application and navigation logic
   src/utils/        address, stack and async helpers
 frontend/
+  package.json      frontend dependencies and scripts
+  package-lock.json frontend dependency lockfile
+  .gitignore        frontend environment/build exclusions
   app/              browser, search, history and publishing pages
   components/       browser, search and publishing UI
   hooks/            browser state integration
@@ -95,28 +101,38 @@ Navigation responses include `{ "site": ..., "navigation": { "entries": [...], "
 
 ## Install and configure
 
-From the repository root:
+Install each application independently in its own directory:
 
 ```powershell
+Set-Location backend
 npm install
-Copy-Item backend\.env.example backend\.env
-Copy-Item frontend\.env.example frontend\.env.local
+Copy-Item .env.example .env
+
+Set-Location ..\frontend
+npm install
+Copy-Item .env.example .env.local
 ```
 
 Set `MONGODB_URI`, `PORT`, `NODE_ENV`, and `FRONTEND_URL` in `backend/.env`. The sample URI points to a local MongoDB database named `small-web`. Set `NEXT_PUBLIC_API_URL` in `frontend/.env.local` if the API is not at `http://localhost:5000/api`.
 
 ## Run
 
-Start MongoDB, then open two terminals in the repository root:
+Start MongoDB, then open separate terminals in the respective project directories:
 
 ```powershell
-npm run dev:backend
-npm run dev:frontend
+# Terminal 1
+Set-Location backend
+npm run dev
+
+# Terminal 2
+Set-Location frontend
+npm run dev
 ```
 
 Seed/reseed the sample dataset (safe to repeat):
 
 ```powershell
+Set-Location backend
 npm run seed
 ```
 
@@ -125,17 +141,14 @@ The frontend is served at `http://localhost:3000`; the API listens on `http://lo
 ## Tests and builds
 
 ```powershell
+Set-Location backend
 npm test
 npm run build
-```
 
-Individual commands are also available:
-
-```powershell
-npm run test --workspace backend
-npm run test --workspace frontend
-npm run build --workspace backend
-npm run build --workspace frontend
+Set-Location ..\frontend
+npm test
+npm run lint
+npm run build
 ```
 
 Backend tests cover navigation-stack branching and boundaries, address normalization, HTML sanitization, request validation, health, and error responses. Frontend tests verify that published content is isolated in a sandboxed iframe. Database-backed integration behavior requires a running MongoDB instance.
